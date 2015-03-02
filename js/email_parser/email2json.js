@@ -2,7 +2,6 @@ var fs = require('fs');
 var bunyan = require('bunyan');
 var ical2json = require("ical2json");
 
-module.exports = {
 var logger = bunyan.createLogger({name: 'email_parser',
         streams: [
         {
@@ -12,9 +11,9 @@ var logger = bunyan.createLogger({name: 'email_parser',
   ]
 });
 
-
-fs.readFile("./sample_calendar_emails/iphone_calendar_event.eml", "ascii", function(err, message) {
-	if(err) {
+module.exports = {
+	email2Json: function(message) {	
+	if(!message) {
 		logger.debug("Error opening file: " + err);
 		return;
 	}
