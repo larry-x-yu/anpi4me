@@ -11,25 +11,22 @@ var logger = bunyan.createLogger({
 });
 
 module.exports = {
-    email2Json: function(message) {
-        if (!message) {
-            logger.debug("Error opening file: " + err);
-            return;
-        }
+    _extractics: function(message) {
+        var beginIndex = -1, endIndex = -1, ics = "";
 
-        beginIndex = -1;
-        endIndex = -1;
-        ics = "";
-        icalJson = null;
+        /**
+         * 
+         * Google calendar enbeds ics in the email as clear text
+         * as well as attachment 
+         */
 
-        //logger.debug("Message:\n" + message);
-
+        /* Check if ics is embedded in the email body as clear text */
         beginIndex = message.indexOf("BEGIN:VCALENDAR");
 
         if (beginIndex != -1) {
             endIndex = message.indexOf("END:VCALENDAR");
             if (endIndex == -1) {
-                logger.debug("Unable to find 'END:VCALENDAR'; Proceed to Base64 check");
+                logger.error("Unable to find 'END:VCALENDAR'; Proceed to Base64 check");
             } else {
                 endIndex += 'END:VCALENDAR'.length;
             }
@@ -37,7 +34,7 @@ module.exports = {
             if (beginIndex != -1 && endIndex != -1) {
                 ics = message.substring(beginIndex, endIndex + 1);
             }
-        } else {
+        } else {    /* Apple's ics is base64 encoded as an attachment */
             // Calendar event from iphone, mac-os
             logger.debug("Search for encoded ics...");
             var marker1 = "Content-Disposition: attachment; filename=.*\.ics";
@@ -60,11 +57,21 @@ module.exports = {
                 logger.debug("No valid ics attachment found");
             }
 
+            return ics;
+    },
+
+    toicsjson: function(message) {
+        if (!message) {
+            logger.debug("Error opening file: " + err);
+            return;
+        }
+
+        var ics = _extractics(message);
             //logger.debug(ics);
-            if (ics) {
+        if (ics) {
                 icalJson = ical2json.convert(ics);
-                logger.debug(icalJson);
+                //logger.debug(icalJson);
             }
         }
     });
-}
+};
