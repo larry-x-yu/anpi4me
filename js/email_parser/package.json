@@ -1,5 +1,5 @@
 {
-  "name": "email_parser",
+  "name": "email2json",
   "version": "1.0.0",
   "description": "",
   "main": "email2json.js",
