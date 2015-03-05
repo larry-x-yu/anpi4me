@@ -1,0 +1,30 @@
+{
+  "name": "Anpi4.me",
+  "version": "1.0.0",
+  "description": "",
+  "main": "rqdb-bridge.js",
+  "dependencies": {
+    "amqp": "^0.2.4",
+    "bunyan": "^1.3.4",
+    "email2json": "^1.0.0"
+  },
+  "devDependencies": {
+    "amqp": "^0.2.4",
+    "bunyan": "^1.3.4",
+    "email2json": "file:../../../tmp/npm-20480-913673fb/git-cache-429751eae6e3/c91f2dc9d77c68e5195a89a997f067c41cd132bd",
+    "ical2json": "^0.2.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/teamlr/anpi4me.git"
+  },
+  "author": "Larry Yu",
+  "license": "Commercial",
+  "bugs": {
+    "url": "https://github.com/teamlr/anpi4me/issues"
+  },
+  "homepage": "https://github.com/teamlr/anpi4me"
+}
