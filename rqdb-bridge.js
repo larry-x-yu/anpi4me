@@ -118,8 +118,19 @@ var logger = bunyan.createLogger({name: 'email_parser',
       		}
 
     });
+<<<<<<< HEAD
 });
         });
     });
 });
 });
+=======
+}
+
+
+		});
+        });
+    });
+});
+
+>>>>>>> f0780c1acbb57199f1891425bd44970aee475135
