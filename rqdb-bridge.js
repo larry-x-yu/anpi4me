@@ -3,6 +3,8 @@ var fs = require('fs');
 var bunyan= require('bunyan');
 var email2json = require('email2json');
 var couchbase = require("couchbase");
+var uuid = require('node-uuid');
+var Promise = require('promise').Promise;
 
 var rabbitqueue;
 var exchangeName;
@@ -99,24 +101,40 @@ var logger = bunyan.createLogger({name: 'email_parser',
 			//logger.debug("email content:" + email);
 			var icsjson = email2json.toicsjson(email);
 			//logger.debug(JSON.stringify(icsjson));
-			
-		logger.debug(icsjson.VEVENT[0].UID);
 
+		var docId = uuid.v4();		
+		var vevent = {};
+	try {
+		if(icsjson.VEVENT) { // Apple calendar
+			vevent = icsjson.VEVENT[0];
+		}
+		else if(icsjson.VCALENDAR[0].VEVENT) { //Google Calendar
+			vevent = icsjson.VCALENDAR[0].VEVENT[0];
+		}
+		else {
+			logger.error("Unable to find VEVENT object: " + JSON.stringify(icsjson));
+		}
+	
+		docId = vevent.UID || docId; 
+	}
+	catch(err) {
+		logger.error(err);
+	}
 		// Connect to Couchbase Server
 
 		var cluster = new couchbase.Cluster('127.0.0.1:8091');
-		var bucket = cluster.openBucket('default', function(err) {
+		var bucket = cluster.openBucket('ics', function(err) {
 		if (err) {
-        		console.log("error: " + err);
-    			throw err;
+        		logger.error("error: " + err);
   		}
 
-    		bucket.insert(icsjson.VEVENT[0].UID, icsjson, function(err, result) {
-      			if (err) {
-        			console.log("error:" + err);
-        			throw err;
-      		}
+		logger.debug("bucket opened");
 
+    		bucket.upsert(docId, vevent, function(err, result) {
+      			if (err) {
+        			logger.error("error:" + err);
+      		}
+			logger.debug(result);
 		});
         });
     });
